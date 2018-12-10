@@ -1,0 +1,46 @@
+library(ggplot2)
+library(ggalt)
+library(ggfortify)
+theme_set(theme_classic())
+library(readr)
+
+
+#making pca plot using DESeq2_rld transformed data
+pcaData <- read_csv("pcaData_rld.csv")
+head(pcaData)
+class(pcaData)
+
+pcaData = as.data.frame(pcaData)
+
+str(pcaData)
+summary(pcaData)
+
+pcaData$Time_points<-factor(pcaData$Time_points, levels = c("0 min","5 min","10 min","30 min"))
+pcaData$Cell_type<-factor(pcaData$Cell_type, levels = c("BSS","M"))
+
+# select groups to draw circles
+pca_0_BS <- pcaData[pcaData$group == "BSS:0", ]
+pca_5_BS <- pcaData[pcaData$group == "BSS:05", ]
+pca_10_BS <- pcaData[pcaData$group == "BSS:10", ]
+pca_30_BS <- pcaData[pcaData$group == "BSS:30", ]
+
+pca_0_M <- pcaData[pcaData$group == "M:0", ]
+pca_5_M <- pcaData[pcaData$group == "M:05", ]
+pca_10_M <- pcaData[pcaData$group == "M:10", ]
+pca_30_M<- pcaData[pcaData$group == "M:30", ]
+
+#plot
+ggplot(pcaData, aes(x = PC1, y = PC2,colour=Time_points, shape=Cell_type)) +
+  geom_point(size = 3) +
+  xlab(paste0("PC1: ", "74", "% variance")) +
+  ylab(paste0("PC2: ", "13", "% variance")) +
+  coord_fixed()+
+  theme_bw()+
+  geom_encircle(data = pca_0_BS, aes(x=PC1, y=PC2)) + 
+  geom_encircle(data = pca_5_BS, aes(x=PC1, y=PC2))+
+  geom_encircle(data = pca_10_BS, aes(x=PC1, y=PC2))+
+  geom_encircle(data = pca_30_BS, aes(x=PC1, y=PC2))+
+  geom_encircle(data = pca_0_M, aes(x=PC1, y=PC2))+
+  geom_encircle(data = pca_5_M, aes(x=PC1, y=PC2))+
+  geom_encircle(data = pca_10_M, aes(x=PC1, y=PC2))+
+  geom_encircle(data = pca_30_M, aes(x=PC1, y=PC2))# draw circles
